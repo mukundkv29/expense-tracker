@@ -1,14 +1,29 @@
 import { StatusBar } from 'expo-status-bar';
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
-  const [total, setTotal] = useState(0);
+  const [inputSum, setInputSum] = useState(0);
+  const [formValue, setFormValue] = useState('');
+  function addInputHandler(){
+    setInputSum(prevState => prevState + parseInt(formValue));
+    setFormValue('');
+  }
   return (
     <View style={styles.container}>
-      <Text>Hello world</Text>
+      <Text>{inputSum}</Text>
+      <TextInput
+        value={formValue}
+        keyboardType="numeric"
+        onChangeText={setFormValue}
+      />
+      <Button
+        title='Add'
+        onPress={addInputHandler}
+      />
       <StatusBar style="auto" />
     </View>
+    
   );
 }
 
