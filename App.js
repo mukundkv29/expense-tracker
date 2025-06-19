@@ -33,8 +33,17 @@ export default function App() {
   function AddExpenseHandler(name) {
     setItems((prevItems) =>
       prevItems.map((item) => {
-        const value = parseInt(item.value);
-        return item.name === name ? {...item, total: item.total+value, value: ""} : item
+        if (item.name === name) {
+          const value = parseInt(item.value, 10);
+          if(!isNaN(value)) {
+            return {
+              ...item, 
+              total: item.total+value,
+              value: ""
+            }
+          }
+        }
+        return item;
       }
       )
     );
@@ -49,8 +58,9 @@ export default function App() {
           <Text>{item.total}</Text>
           <TextInput
             value={item.value}
-            onChange={(text) => handleFormInput(item.name, text)}
+            onChangeText={(text) => handleFormInput(item.name, text)}
             keyboardType='numeric'
+            inputMode='numeric'
           />
           <Button
             title='Add'
