@@ -1,29 +1,65 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, ToastAndroid, View } from 'react-native';
 import { useState } from 'react';
 
 export default function App() {
-  const [inputSum, setInputSum] = useState(0);
-  const [formValue, setFormValue] = useState('');
-  function addInputHandler(){
-    setInputSum(prevState => prevState + parseInt(formValue));
-    setFormValue('');
-  }
+
+  const [items, setItems] = useState([
+    {
+      name: "Groceries",
+      value: "",
+      total: 0,
+    },
+    {
+      name: "Electronics",
+      value: "",
+      total: 0,
+    },
+    {
+      name: "Sports",
+      value: "",
+      total: 0,
+    },
+  ]);
+
+  function handleFormInput(name, text) {
+    setItems((prevItems) => 
+      prevItems.map((item) => 
+        item.name === name ? {...item, value: text} : item
+      )
+    );
+  };
+
+  function AddExpenseHandler(name) {
+    setItems((prevItems) =>
+      prevItems.map((item) => {
+        const value = parseInt(item.value);
+        return item.name === name ? {...item, total: item.total+value, value: ""} : item
+      }
+      )
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <Text>{inputSum}</Text>
-      <TextInput
-        value={formValue}
-        keyboardType="numeric"
-        onChangeText={setFormValue}
-      />
-      <Button
-        title='Add'
-        onPress={addInputHandler}
-      />
+      <Text>Hello world</Text>
+      {items.map((item) => (
+        <View key={item.name} style={{marginTop: 40}}>
+          <Text>{item.name}</Text>
+          <Text>{item.total}</Text>
+          <TextInput
+            value={item.value}
+            onChange={(text) => handleFormInput(item.name, text)}
+            keyboardType='numeric'
+          />
+          <Button
+            title='Add'
+            onPress={() => AddExpenseHandler(item.name)}
+          />
+        </View>
+      ))}
       <StatusBar style="auto" />
     </View>
-    
   );
 }
 
