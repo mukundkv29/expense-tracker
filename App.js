@@ -1,9 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, TextInput, ToastAndroid, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
 
 export default function App() {
-
+  
   const [items, setItems] = useState([
     {
       name: "Groceries",
@@ -21,11 +21,11 @@ export default function App() {
       total: 0,
     },
   ]);
-
+  
   function handleFormInput(name, text) {
     setItems((prevItems) => 
       prevItems.map((item) => 
-        item.name === name ? {...item, value: text} : item
+        item.name === name ? {...item, value: text} : item 
       )
     );
   };
@@ -44,14 +44,13 @@ export default function App() {
           }
         }
         return item;
-      }
-      )
+      })
     );
   };
-
+  let MonthlyExpense = items.reduce((sum, item) => sum+item.total, 0);
   return (
     <View style={styles.container}>
-      <Text>Hello world</Text>
+      <Text style={{fontWeight: 'bold'}}>Monthly Expense: {MonthlyExpense}</Text>
       {items.map((item) => (
         <View key={item.name} style={{marginTop: 40}}>
           <Text>{item.name}</Text>
