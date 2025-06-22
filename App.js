@@ -52,11 +52,15 @@ export default function App() {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.container}>
-        
+
         {/* MonthlyExpense */}
-        <View style={styles.card}>
-          <Text>June 2025</Text>
-          <Text>{MonthlyExpense}</Text>
+        <View style={styles.monthlyExpenseCard}>
+          <View style={styles.amountSection}>
+            <Text style={styles.amountText}>{MonthlyExpense}</Text>
+          </View>
+          <View style={styles.monthSection}>
+            <Text style={styles.monthText}>June 2025</Text>
+          </View>
         </View>
 
         {/* List Items */}
@@ -88,9 +92,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    // justifyContent: 'center',
     padding: 20,
-  },card: {
+  },
+  monthlyExpenseCard: {
     backgroundColor: '#f5f5f5',
     borderRadius: 15,
     padding: 16,
@@ -103,8 +107,31 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 14,
     width: 350,
-    height: 150,
+    height: 110,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  amountSection: {
+    flex: 4,
+    borderColor: '#ccc',
+    borderRightWidth: 2,
+    width: '70%',
+    justifyContent: 'flex-end'
+  },
+  amountText: {
+    fontWeight: 'bold',
+    fontSize: 50,
+    width: '100%'
+  },
+  monthSection: {
+    flex: 1,
+    paddingLeft: 10,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  monthText: {
+    fontSize: 16,
+    color: '#555'
   },
 });
