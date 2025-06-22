@@ -9,17 +9,17 @@ export default function App() {
     {
       name: "Groceries",
       value: "",
-      total: 0,
+      total: 4020,
     },
     {
       name: "Electronics",
       value: "",
-      total: 0,
+      total: 5000,
     },
     {
       name: "Sports",
       value: "",
-      total: 0,
+      total: 377,
     },
   ]);
   
@@ -49,6 +49,11 @@ export default function App() {
     );
   };
   let MonthlyExpense = items.reduce((sum, item) => sum+item.total, 0);
+  let formattedCurrency = new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+  }).format(MonthlyExpense);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.container}>
@@ -56,7 +61,7 @@ export default function App() {
         {/* MonthlyExpense */}
         <View style={styles.monthlyExpenseCard}>
           <View style={styles.amountSection}>
-            <Text style={styles.amountText}>{MonthlyExpense}</Text>
+            <Text style={styles.amountText}>{formattedCurrency}</Text>
           </View>
           <View style={styles.monthSection}>
             <Text style={styles.monthText}>June 2025</Text>
@@ -107,7 +112,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 14,
     width: 350,
-    height: 110,
+    height: 100,
     justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center'
@@ -121,8 +126,9 @@ const styles = StyleSheet.create({
   },
   amountText: {
     fontWeight: 'bold',
-    fontSize: 50,
-    width: '100%'
+    fontSize: 40,
+    width: '100%',
+    paddingLeft: 5
   },
   monthSection: {
     flex: 1,
