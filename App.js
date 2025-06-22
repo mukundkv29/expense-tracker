@@ -1,27 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
+
+import { initialItems } from './data/data';
 
 export default function App() {
   
-  const [items, setItems] = useState([
-    {
-      name: "Groceries",
-      value: "",
-      total: 4020,
-    },
-    {
-      name: "Electronics",
-      value: "",
-      total: 5000,
-    },
-    {
-      name: "Sports",
-      value: "",
-      total: 377,
-    },
-  ]);
+  const [items, setItems] = useState(initialItems);
   
   function handleFormInput(name, text) {
     setItems((prevItems) => 
@@ -69,23 +55,29 @@ export default function App() {
         </View>
 
         {/* List Items */}
-        {items.map((item) => (
-          <View key={item.name} style={{marginTop: 40}}>
-            <Text>{item.name}</Text>
-            <Text>{item.total}</Text>
-            <TextInput
-              value={item.value}
-              onChangeText={(text) => handleFormInput(item.name, text)}
-              keyboardType='numeric'
-              inputMode='numeric'
-              onSubmitEditing={() => AddExpenseHandler(item.name)}
-            />
-            <Button
-              title='Add'
-              onPress={() => AddExpenseHandler(item.name)}
-            />
-          </View>
-        ))}
+        <ScrollView>
+          {items.map((item) => (
+            <View key={item.name} style={{marginTop: 40,
+              borderWidth: 4,
+              borderColor: 'black',
+              width: '100%'
+            }}>
+              <Text>{item.name}</Text>
+              <Text>{item.total}</Text>
+              <TextInput
+                value={item.value}
+                onChangeText={(text) => handleFormInput(item.name, text)}
+                keyboardType='numeric'
+                inputMode='numeric'
+                onSubmitEditing={() => AddExpenseHandler(item.name)}
+                />
+              <Button
+                title='Add'
+                onPress={() => AddExpenseHandler(item.name)}
+                />
+            </View>
+          ))}
+        </ScrollView>
         <StatusBar style="auto" />
       </View>
     </SafeAreaView>
@@ -138,6 +130,7 @@ const styles = StyleSheet.create({
   },
   monthText: {
     fontSize: 16,
+    padding: 10,
     color: '#555'
   },
 });
