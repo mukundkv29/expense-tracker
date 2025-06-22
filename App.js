@@ -1,4 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
 
@@ -49,26 +50,36 @@ export default function App() {
   };
   let MonthlyExpense = items.reduce((sum, item) => sum+item.total, 0);
   return (
-    <View style={styles.container}>
-      <Text style={{fontWeight: 'bold'}}>Monthly Expense: {MonthlyExpense}</Text>
-      {items.map((item) => (
-        <View key={item.name} style={{marginTop: 40}}>
-          <Text>{item.name}</Text>
-          <Text>{item.total}</Text>
-          <TextInput
-            value={item.value}
-            onChangeText={(text) => handleFormInput(item.name, text)}
-            keyboardType='numeric'
-            inputMode='numeric'
-          />
-          <Button
-            title='Add'
-            onPress={() => AddExpenseHandler(item.name)}
-          />
+    <SafeAreaView style={{flex: 1}}>
+      <View style={styles.container}>
+        
+        {/* MonthlyExpense */}
+        <View style={styles.card}>
+          <Text>June 2025</Text>
+          <Text>{MonthlyExpense}</Text>
         </View>
-      ))}
-      <StatusBar style="auto" />
-    </View>
+
+        {/* List Items */}
+        {items.map((item) => (
+          <View key={item.name} style={{marginTop: 40}}>
+            <Text>{item.name}</Text>
+            <Text>{item.total}</Text>
+            <TextInput
+              value={item.value}
+              onChangeText={(text) => handleFormInput(item.name, text)}
+              keyboardType='numeric'
+              inputMode='numeric'
+              onSubmitEditing={() => AddExpenseHandler(item.name)}
+            />
+            <Button
+              title='Add'
+              onPress={() => AddExpenseHandler(item.name)}
+            />
+          </View>
+        ))}
+        <StatusBar style="auto" />
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -77,6 +88,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
+    // justifyContent: 'center',
+    padding: 20,
+  },card: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 15,
+    padding: 16,
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 14,
+    width: 350,
+    height: 150,
     justifyContent: 'center',
+    alignItems: 'center',
   },
 });
