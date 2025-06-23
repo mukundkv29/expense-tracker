@@ -57,7 +57,12 @@ export default function App() {
         </View>
 
         {/* List Items */}
-        <ScrollView>
+        <ScrollView 
+          style={{
+            width: '94%'
+          }}
+          showsVerticalScrollIndicator={false}
+        >
           {items.map((item) => (
             <ItemCard
               key={item.name}
