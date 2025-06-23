@@ -5,6 +5,8 @@ import { useState } from 'react';
 
 import { initialItems } from './data/data';
 
+import ItemCard from './components/ItemCard';
+
 export default function App() {
   
   const [items, setItems] = useState(initialItems);
@@ -57,25 +59,12 @@ export default function App() {
         {/* List Items */}
         <ScrollView>
           {items.map((item) => (
-            <View key={item.name} style={{marginTop: 40,
-              borderWidth: 4,
-              borderColor: 'black',
-              width: '100%'
-            }}>
-              <Text>{item.name}</Text>
-              <Text>{item.total}</Text>
-              <TextInput
-                value={item.value}
-                onChangeText={(text) => handleFormInput(item.name, text)}
-                keyboardType='numeric'
-                inputMode='numeric'
-                onSubmitEditing={() => AddExpenseHandler(item.name)}
-                />
-              <Button
-                title='Add'
-                onPress={() => AddExpenseHandler(item.name)}
-                />
-            </View>
+            <ItemCard
+              key={item.name}
+              item={item}
+              onAdd={AddExpenseHandler}
+              onChangeText={handleFormInput}
+            />
           ))}
         </ScrollView>
         <StatusBar style="auto" />
