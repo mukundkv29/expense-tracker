@@ -69,11 +69,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     fontSize: 16,
     minWidth: 50,
-  },
-  addText: {
-    color: '#222',
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginLeft: 10
   }
 })
