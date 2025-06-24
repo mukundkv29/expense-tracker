@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   monthlyExpenseCard: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f8f7de',
     borderRadius: 15,
     padding: 16,
     shadowColor: 'black',
@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.3,
     shadowRadius: 6,
+    shadowColor: '#3a200c',
     elevation: 14,
     width: 350,
     height: 100,
