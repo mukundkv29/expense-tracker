@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, View } from 'react-native';
 import { useState } from 'react';
 
 import { initialItems } from './data/newData';
@@ -37,6 +37,27 @@ export default function App() {
       })
     );
   };
+
+  function UndoHandler(name) {
+    setItems((prevItems) => 
+      prevItems.map((item) => {
+        if(item.name === name) {
+          let newExpenses = [...item.expenses];
+          let decreaseTotal = 0;
+          if(newExpenses.length > 0) {
+            decreaseTotal = newExpenses.pop();
+          } else return item;
+          return {
+            ...item,
+            expenses: newExpenses,
+            total: item.total-decreaseTotal,
+          }
+        }
+        return item;
+      })
+    );
+  };
+
   let MonthlyExpense = items.reduce((sum, item) => sum+item.total, 0);
   let formattedCurrency = new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -60,7 +81,7 @@ export default function App() {
         {/* List Items */}
         <ScrollView 
           style={{
-            width: '94%'
+            width: '100%'
           }}
           showsVerticalScrollIndicator={false}
         >
@@ -70,6 +91,7 @@ export default function App() {
               item={item}
               onAdd={AddExpenseHandler}
               onChangeText={handleFormInput}
+              onUndo={UndoHandler}
             />
           ))}
         </ScrollView>

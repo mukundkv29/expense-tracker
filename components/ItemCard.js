@@ -7,7 +7,7 @@ function formattedTotal(total) {
   }).format(total);
 }
 
-export default function ItemCard({item, onChangeText, onAdd}) {
+export default function ItemCard({item, onChangeText, onAdd, onUndo}) {
   return (
     <View key={item.name} style={styles.container}>
       <View style={styles.leftSection}>
@@ -27,6 +27,10 @@ export default function ItemCard({item, onChangeText, onAdd}) {
       <Button
         onPress={() => onAdd(item.name)}
         title="Add"
+      />
+      <Button
+        title="Undo"
+        onPress={() => onUndo(item.name)}
       />
     </View>
   );
