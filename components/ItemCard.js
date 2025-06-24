@@ -53,21 +53,23 @@ const styles = StyleSheet.create({
   },
   nameText: {
     fontSize: 16,
-    color: '#222',
+    color: '#3a200c',
     marginBottom: 4,
   },
   amountText: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#3a200c',
   },
   input: {
     flex: 1,
-    borderBottomWidth: 2,
-    borderBottomColor: '#d29d30',
     paddingHorizontal: 5,
     marginHorizontal: 10,
     fontSize: 16,
-    minWidth: 50,
+    minWidth: 15,
+    borderColor: '#d29d30',
+    borderWidth: 1,
+    borderRadius: 7,
+    textAlign: 'center'
   }
 })

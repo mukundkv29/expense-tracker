@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
 
-import { initialItems } from './data/data';
+import { initialItems } from './data/newData';
 
 import ItemCard from './components/ItemCard';
 
@@ -28,7 +28,8 @@ export default function App() {
             return {
               ...item, 
               total: item.total+value,
-              value: ""
+              value: "",
+              expenses: [...item.expenses, value],
             }
           }
         }
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
   },
   amountSection: {
     flex: 4,
-    borderColor: '#ccc',
+    borderColor: '#d29d30',
     borderRightWidth: 2,
     width: '70%',
     justifyContent: 'flex-end'
@@ -115,7 +116,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 40,
     width: '100%',
-    paddingLeft: 5
+    paddingLeft: 5,
+    color: '#3a200c',
   },
   monthSection: {
     flex: 1,
@@ -126,6 +128,6 @@ const styles = StyleSheet.create({
   monthText: {
     fontSize: 16,
     padding: 10,
-    color: '#555'
+    color: '#854d0d'
   },
 });
