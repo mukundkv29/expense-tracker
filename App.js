@@ -50,7 +50,7 @@ export default function App() {
           return {
             ...item,
             expenses: newExpenses,
-            total: item.total-decreaseTotal,
+            total: Math.max(item.total-decreaseTotal, 0),
           }
         }
         return item;

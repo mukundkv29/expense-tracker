@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { StyleSheet, View, Text, TextInput, Button  } from "react-native";
 
 function formattedTotal(total) {
@@ -8,6 +9,20 @@ function formattedTotal(total) {
 }
 
 export default function ItemCard({item, onChangeText, onAdd, onUndo}) {
+
+  const [undoButton, setUndoButton] = useState(false);
+
+  function addExpenseHandler() {
+    onAdd(item.name);
+    setUndoButton(true);
+    setTimeout(()=>setUndoButton(false), 5000);
+  }
+
+  function undoExpenseHandler() {
+    onUndo(item.name);
+    setUndoButton(false);
+  }
+
   return (
     <View key={item.name} style={styles.container}>
       <View style={styles.leftSection}>
@@ -22,16 +37,18 @@ export default function ItemCard({item, onChangeText, onAdd, onUndo}) {
         placeholder="Add"
         placeholderTextColor='#888'
         onChangeText={(text) => onChangeText(item.name, text)}
-        onSubmitEditing={() => onAdd(item.name)}
+        onSubmitEditing={addExpenseHandler}
       />
       <Button
-        onPress={() => onAdd(item.name)}
+        onPress={addExpenseHandler}
         title="Add"
       />
-      <Button
-        title="Undo"
-        onPress={() => onUndo(item.name)}
-      />
+      {undoButton &&
+        <Button
+          title="Undo"
+          onPress={undoExpenseHandler}
+        />
+      }
     </View>
   );
 }
