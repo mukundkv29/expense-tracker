@@ -35,8 +35,7 @@ export default function App() {
           if(!isNaN(value)) {
             setLastAddedItem(item.name);
             return {
-              ...item, 
-              total: item.total+value,
+              ...item,
               value: "",
               expenses: [...item.expenses, value],
             }
@@ -68,7 +67,7 @@ export default function App() {
           return {
             ...item,
             expenses: newExpenses,
-            total: Math.max(item.total-decreaseTotal, 0)
+            // total: Math.max(item.total-decreaseTotal, 0)
           }
         }
         return item;
