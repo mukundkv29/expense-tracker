@@ -47,7 +47,7 @@ export default function App() {
     );
     setTimeout(() => {
       setLastAddedItem('');
-    }, 7000 );
+    }, 11000);
     showUndoToast();
   };
 
@@ -77,7 +77,12 @@ export default function App() {
     setLastAddedItem('');
   }
 
-  let MonthlyExpense = items.reduce((sum, item) => sum+item.total, 0);
+  let MonthlyExpense = items.reduce((sum, item) => {
+      let total=0;
+      item.expenses.forEach(expense => total += expense);
+      return sum+total;
+    }
+  , 0);
   let formattedCurrency = new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
@@ -112,14 +117,14 @@ export default function App() {
           }}
           showsVerticalScrollIndicator={false}
         >
-          {items.map((item) => (
-            <ItemCard
+          {items.map((item) => {
+            return <ItemCard
               key={item.name}
               item={item}
               onAdd={AddExpenseHandler}
               onChangeText={handleFormInput}
-            />
-          ))}
+            />;
+          })}
         </ScrollView>
         <StatusBar style="auto" />
       </View>

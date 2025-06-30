@@ -13,11 +13,15 @@ export default function ItemCard({item, onChangeText, onAdd}) {
     onAdd(item.name);
   }
 
+  const monthlyExpense = item.expenses.reduce((sum, expense) => sum + expense, 0);
+
   return (
     <View key={item.name} style={styles.container}>
       <View style={styles.leftSection}>
         <Text style={styles.nameText}>{item.name}</Text>
-        <Text style={styles.amountText}>{formattedTotal(item.total)}</Text>
+        <Text style={styles.amountText}>{
+          formattedTotal(monthlyExpense)
+        }</Text>
       </View>
       <TextInput
         style={styles.input}
