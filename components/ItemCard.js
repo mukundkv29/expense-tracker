@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { StyleSheet, View, Text, TextInput, Button  } from "react-native";
 
 function formattedTotal(total) {
@@ -8,19 +7,10 @@ function formattedTotal(total) {
   }).format(total);
 }
 
-export default function ItemCard({item, onChangeText, onAdd, onUndo}) {
-
-  const [undoButton, setUndoButton] = useState(false);
+export default function ItemCard({item, onChangeText, onAdd}) {
 
   function addExpenseHandler() {
     onAdd(item.name);
-    setUndoButton(true);
-    setTimeout(()=>setUndoButton(false), 5000);
-  }
-
-  function undoExpenseHandler() {
-    onUndo(item.name);
-    setUndoButton(false);
   }
 
   return (
@@ -43,12 +33,6 @@ export default function ItemCard({item, onChangeText, onAdd, onUndo}) {
         onPress={addExpenseHandler}
         title="Add"
       />
-      {undoButton &&
-        <Button
-          title="Undo"
-          onPress={undoExpenseHandler}
-        />
-      }
     </View>
   );
 }
@@ -58,7 +42,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f7ea87',
-    marginTop: 40,
+    marginTop: 30,
     borderWidth: 3,
     borderColor: '#854d0d',
     borderWidth: 1,

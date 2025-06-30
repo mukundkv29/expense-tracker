@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, View } from 'react-native';
+import { Button, ScrollView, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { useState } from 'react';
 
 import { initialItems } from './data/newData';
@@ -10,6 +10,7 @@ import ItemCard from './components/ItemCard';
 export default function App() {
   
   const [items, setItems] = useState(initialItems);
+  const [lastAddedItem, setLastAddedItem] = useState('');
   
   function handleFormInput(name, text) {
     setItems((prevItems) => 
@@ -19,12 +20,20 @@ export default function App() {
     );
   };
 
+  const showUndoToast = () => {
+    ToastAndroid.show('Expense Added!\nTap UNDO if needed!', ToastAndroid.LONG);
+  };
+  const showItemRemovedToast = () => {
+    ToastAndroid.show('Last Added Expense removed', ToastAndroid.SHORT);
+  };
+
   function AddExpenseHandler(name) {
     setItems((prevItems) =>
       prevItems.map((item) => {
         if (item.name === name) {
           const value = parseInt(item.value, 10);
           if(!isNaN(value)) {
+            setLastAddedItem(item.name);
             return {
               ...item, 
               total: item.total+value,
@@ -36,27 +45,37 @@ export default function App() {
         return item;
       })
     );
+    setTimeout(() => {
+      setLastAddedItem('');
+    }, 7000 );
+    showUndoToast();
   };
 
-  function UndoHandler(name) {
+  function UndoHandler() {
+    if(lastAddedItem.length === 0)
+      return;
     setItems((prevItems) => 
       prevItems.map((item) => {
-        if(item.name === name) {
+        if(item.name === lastAddedItem) {
           let newExpenses = [...item.expenses];
           let decreaseTotal = 0;
           if(newExpenses.length > 0) {
             decreaseTotal = newExpenses.pop();
-          } else return item;
+          } else {
+            return item;
+          }
+          showItemRemovedToast();
           return {
             ...item,
             expenses: newExpenses,
-            total: Math.max(item.total-decreaseTotal, 0),
+            total: Math.max(item.total-decreaseTotal, 0)
           }
         }
         return item;
       })
     );
-  };
+    setLastAddedItem('');
+  }
 
   let MonthlyExpense = items.reduce((sum, item) => sum+item.total, 0);
   let formattedCurrency = new Intl.NumberFormat('en-IN', {
@@ -78,6 +97,14 @@ export default function App() {
           </View>
         </View>
 
+        {/* undoButton */}
+        {lastAddedItem.length > 0 &&
+          <Button
+            title='Undo'
+            onPress={UndoHandler}
+          />
+        }
+
         {/* List Items */}
         <ScrollView 
           style={{
@@ -91,7 +118,6 @@ export default function App() {
               item={item}
               onAdd={AddExpenseHandler}
               onChangeText={handleFormInput}
-              onUndo={UndoHandler}
             />
           ))}
         </ScrollView>
@@ -125,7 +151,8 @@ const styles = StyleSheet.create({
     height: 100,
     justifyContent: 'center',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: 20
   },
   amountSection: {
     flex: 4,
