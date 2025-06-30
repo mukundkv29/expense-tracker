@@ -31,16 +31,21 @@ export default function App() {
     setItems((prevItems) =>
       prevItems.map((item) => {
         if (item.name === name) {
-          const value = parseInt(item.value, 10);
-          if(!isNaN(value)) {
+          const amount = parseInt(item.value, 10);
+          const currentDate = new Date();
+          if(!isNaN(amount)) {
             setLastAddedItem(item.name);
             return {
               ...item,
               value: "",
-              expenses: [...item.expenses, value],
+              expenses: [...item.expenses, {
+                amount: amount,
+                month: currentDate.getMonth(),
+              }],
             }
           }
         }
+        console.log(item.expenses);
         return item;
       })
     );
@@ -57,17 +62,14 @@ export default function App() {
       prevItems.map((item) => {
         if(item.name === lastAddedItem) {
           let newExpenses = [...item.expenses];
-          let decreaseTotal = 0;
-          if(newExpenses.length > 0) {
-            decreaseTotal = newExpenses.pop();
-          } else {
+          if(newExpenses.length <= 0) {
             return item;
           }
+          newExpenses.pop();
           showItemRemovedToast();
           return {
             ...item,
             expenses: newExpenses,
-            // total: Math.max(item.total-decreaseTotal, 0)
           }
         }
         return item;
@@ -78,7 +80,7 @@ export default function App() {
 
   let MonthlyExpense = items.reduce((sum, item) => {
       let total=0;
-      item.expenses.forEach(expense => total += expense);
+      item.expenses.forEach(expense => total += expense.amount);
       return sum+total;
     }
   , 0);

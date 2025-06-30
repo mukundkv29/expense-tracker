@@ -13,7 +13,7 @@ export default function ItemCard({item, onChangeText, onAdd}) {
     onAdd(item.name);
   }
 
-  const monthlyExpense = item.expenses.reduce((sum, expense) => sum + expense, 0);
+  const monthlyExpense = item.expenses.reduce((sum, expense) => sum + expense.amount, 0);
 
   return (
     <View key={item.name} style={styles.container}>
