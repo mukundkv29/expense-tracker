@@ -1,4 +1,7 @@
-import { StyleSheet, View, Text, TextInput, Button  } from "react-native";
+import { useState } from "react";
+import { StyleSheet, View, Text, TextInput, Button, Pressable  } from "react-native";
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 
 function formattedTotal(total) {
   return new Intl.NumberFormat('en-IN', {
@@ -9,11 +12,23 @@ function formattedTotal(total) {
 
 export default function ItemCard({item, onChangeText, onAdd}) {
 
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showCalendar, setShowCalendar] = useState(false);
+
+
   function addExpenseHandler() {
     onAdd(item.name);
   }
 
   const monthlyExpense = item.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+  const onDateChange = (event, date) => {
+    setShowCalendar(false);
+    if (date) {
+      setSelectedDate(date);
+      console.log("Selected Date:", date.toDateString());
+    }
+  };
 
   return (
     <View key={item.name} style={styles.container}>
@@ -33,10 +48,23 @@ export default function ItemCard({item, onChangeText, onAdd}) {
         onChangeText={(text) => onChangeText(item.name, text)}
         onSubmitEditing={addExpenseHandler}
       />
+      <Pressable
+        onPress={() => setShowCalendar(true)}
+        style={styles.calendarButton}
+      >
+        <Text style={styles.calendarText}>📅</Text>
+      </Pressable>
       <Button
         onPress={addExpenseHandler}
         title="Add"
       />
+      {showCalendar && (
+        <DateTimePicker
+          value={selectedDate}
+          mode="date"
+          onChange={onDateChange}
+        />
+      )}
     </View>
   );
 }
@@ -80,5 +108,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 7,
     textAlign: 'center'
-  }
+  },
+  calendarButton: {
+    marginRight: 10,
+    padding: 6,
+    borderWidth: 1,
+    borderColor: '#d29d30',
+    borderRadius: 5,
+    backgroundColor: '#fff3c4',
+  },
+  calendarText: {
+    fontSize: 20,
+  },
 })
