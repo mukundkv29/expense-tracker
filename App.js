@@ -90,7 +90,11 @@ export default function App() {
 
   let MonthlyExpense = items.reduce((sum, item) => {
       let total=0;
-      item.expenses.forEach(expense => total += expense.amount);
+      item.expenses.forEach(expense => {
+          if(expense.month === selectedMonth) 
+            total += expense.amount;
+        }
+      );
       return sum+total;
     }
   , 0);
