@@ -1,16 +1,22 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, ScrollView, StyleSheet, Text, ToastAndroid, View } from 'react-native';
+import { Button, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { useState } from 'react';
 
 import { initialItems } from './data/newData';
 
 import ItemCard from './components/ItemCard';
 
+const monthNames = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
 export default function App() {
   
   const [items, setItems] = useState(initialItems);
   const [lastAddedItem, setLastAddedItem] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState(7);
   
   function handleFormInput(name, text) {
     setItems((prevItems) => 
@@ -27,12 +33,12 @@ export default function App() {
     ToastAndroid.show('Last Added Expense removed', ToastAndroid.SHORT);
   };
 
-  function AddExpenseHandler(name) {
+  function AddExpenseHandler(name, selectedDate) {
     setItems((prevItems) =>
       prevItems.map((item) => {
         if (item.name === name) {
           const amount = parseInt(item.value, 10);
-          const currentDate = new Date();
+          // const currentDate = new Date();
           if(!isNaN(amount)) {
             setLastAddedItem(item.name);
             return {
@@ -40,7 +46,7 @@ export default function App() {
               value: "",
               expenses: [...item.expenses, {
                 amount: amount,
-                month: currentDate.getMonth(),
+                month: selectedDate.getMonth(),
               }],
             }
           }
@@ -78,6 +84,10 @@ export default function App() {
     setLastAddedItem('');
   }
 
+  function incrementMonthHandler() {
+    setSelectedMonth(currentMonth => (currentMonth+1)%12);
+  }
+
   let MonthlyExpense = items.reduce((sum, item) => {
       let total=0;
       item.expenses.forEach(expense => total += expense.amount);
@@ -98,9 +108,15 @@ export default function App() {
           <View style={styles.amountSection}>
             <Text style={styles.amountText}>{formattedCurrency}</Text>
           </View>
-          <View style={styles.monthSection}>
-            <Text style={styles.monthText}>June 2025</Text>
-          </View>
+          {/* <View style={styles.monthSection}> */}
+          <TouchableOpacity
+            onPress={incrementMonthHandler}
+            style={styles.monthSection}
+          >
+            <Text style={styles.monthText}>{monthNames[selectedMonth]}</Text>
+            <Text style={{color: '#854d0d'}}>2025</Text>
+          </TouchableOpacity>
+          {/* </View> */}
         </View>
 
         {/* undoButton */}
@@ -124,6 +140,7 @@ export default function App() {
               item={item}
               onAdd={AddExpenseHandler}
               onChangeText={handleFormInput}
+              selectedMonth={selectedMonth}
             />;
           })}
         </ScrollView>
@@ -161,7 +178,7 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   amountSection: {
-    flex: 4,
+    flex: 13,
     borderColor: '#d29d30',
     borderRightWidth: 2,
     width: '70%',
@@ -175,14 +192,13 @@ const styles = StyleSheet.create({
     color: '#3a200c',
   },
   monthSection: {
-    flex: 1,
+    flex: 6,
     paddingLeft: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   monthText: {
     fontSize: 16,
-    padding: 10,
-    color: '#854d0d'
+    color: '#854d0d',
   },
 });

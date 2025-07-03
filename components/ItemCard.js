@@ -10,17 +10,23 @@ function formattedTotal(total) {
   }).format(total);
 }
 
-export default function ItemCard({item, onChangeText, onAdd}) {
+export default function ItemCard({item, onChangeText, onAdd, selectedMonth}) {
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
 
 
   function addExpenseHandler() {
-    onAdd(item.name);
+    onAdd(item.name, selectedDate);
   }
 
-  const monthlyExpense = item.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const monthlyExpense = item.expenses.reduce((sum, expense) => {
+      if(expense.month === selectedMonth) {
+        return sum+expense.amount;
+      }
+      return sum;
+    },
+  0);
 
   const onDateChange = (event, date) => {
     setShowCalendar(false);
