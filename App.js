@@ -1,9 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, View } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { initialItems } from './data/newData';
+import { AsyncStorageItems } from './data/AsyncStorageItems';
 import { useExpenseOperations } from './hooks/useExpenseOperations';
 import { calculateMonthlyExpense } from './utils/expenseCalculations';
 import { appStyles } from './styles/AppStyles';
@@ -13,9 +13,25 @@ import MonthSelector from './components/MonthSelector';
 import UndoButton from './components/UndoButton';
 
 export default function App() {
-  const [items, setItems] = useState(initialItems);
+  const [items, setItems] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(6);
-  
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadExpenseData();
+  }, []);
+
+  async function loadExpenseData() {
+    try {
+      await AsyncStorageItems.initializeStorage();
+      const savedItems = AsyncStorageItems.getExpenseItems();
+      setItems(savedItems);
+    } catch (error) {
+      console.error('failed to laod expense data: ', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
   const {
     lastAddedItem,
     handleFormInput,
@@ -28,6 +44,14 @@ export default function App() {
   };
 
   const monthlyExpense = calculateMonthlyExpense(items, selectedMonth);
+
+  if(isLoading) {
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={[appStyles.container, { justifyContent: 'center' }]}>
+        <Text>Loading expenses...</Text>
+      </View>
+    </SafeAreaView>
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

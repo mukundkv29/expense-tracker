@@ -1,8 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ToastAndroid } from 'react-native';
+import { AsyncStorageItems } from '../data/AsyncStorageItems';
 
 export function useExpenseOperations(items, setItems) {
   const [lastAddedItem, setLastAddedItem] = useState('');
+
+  useEffect(() => {
+    if(items.length > 0) {
+      AsyncStorageItems.saveExpenseItem(items);
+    }
+  }, [items]);
 
   function showUndoToast() {
     ToastAndroid.show('Expense Added!\nTap UNDO if needed!', ToastAndroid.LONG);
