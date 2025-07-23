@@ -6,17 +6,17 @@ import { calculateItemMonthlyTotal } from '../utils/expenseCalculations';
 import { itemCardStyles } from '../styles/ItemCardStyles';
 import { colors } from '../theme/colors';
 
-const ItemCard = ({ item, onChangeText, onAdd, selectedMonth }) => {
+export default function ItemCard({ item, onChangeText, onAdd, selectedMonth }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
 
-  const addExpenseHandler = () => {
+  function addExpenseHandler() {
     onAdd(item.name, selectedDate);
   };
 
   const monthlyExpense = calculateItemMonthlyTotal(item.expenses, selectedMonth);
 
-  const onDateChange = (event, date) => {
+  function onDateChange(event, date) {
     setShowCalendar(false);
     if (date) {
       setSelectedDate(date);
@@ -62,5 +62,3 @@ const ItemCard = ({ item, onChangeText, onAdd, selectedMonth }) => {
     </View>
   );
 };
-
-export default ItemCard;

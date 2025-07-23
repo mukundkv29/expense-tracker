@@ -14,7 +14,7 @@ import UndoButton from './components/UndoButton';
 
 export default function App() {
   const [items, setItems] = useState(initialItems);
-  const [selectedMonth, setSelectedMonth] = useState(7);
+  const [selectedMonth, setSelectedMonth] = useState(6);
   
   const {
     lastAddedItem,
@@ -22,8 +22,8 @@ export default function App() {
     addExpenseHandler,
     undoHandler
   } = useExpenseOperations(items, setItems);
-
-  const incrementMonthHandler = () => {
+  
+  function incrementMonthHandler() {
     setSelectedMonth(currentMonth => (currentMonth + 1) % 12);
   };
 

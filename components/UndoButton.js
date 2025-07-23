@@ -1,8 +1,8 @@
 import { Button } from 'react-native';
 
-const UndoButton = ({ visible, onUndo }) => {
-  if (!visible) return null;
-  
+export default function UndoButton ({ visible, onUndo }) {
+  if (!visible)
+    return null;
   return (
     <Button
       title='Undo'
@@ -10,5 +10,3 @@ const UndoButton = ({ visible, onUndo }) => {
     />
   );
 };
-
-export default UndoButton;

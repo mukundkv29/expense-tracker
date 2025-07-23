@@ -1,26 +1,26 @@
 import { useState } from 'react';
 import { ToastAndroid } from 'react-native';
 
-export const useExpenseOperations = (items, setItems) => {
+export function useExpenseOperations(items, setItems) {
   const [lastAddedItem, setLastAddedItem] = useState('');
 
-  const showUndoToast = () => {
+  function showUndoToast() {
     ToastAndroid.show('Expense Added!\nTap UNDO if needed!', ToastAndroid.LONG);
   };
 
-  const showItemRemovedToast = () => {
+  function showItemRemovedToast() {
     ToastAndroid.show('Last Added Expense removed', ToastAndroid.SHORT);
   };
 
-  const handleFormInput = (name, text) => {
+  function handleFormInput(name, text) {
     setItems((prevItems) => 
       prevItems.map((item) => 
         item.name === name ? {...item, value: text} : item 
       )
     );
   };
-
-  const addExpenseHandler = (name, selectedDate) => {
+  
+  function addExpenseHandler(name, selectedDate) {
     setItems((prevItems) =>
       prevItems.map((item) => {
         if (item.name === name) {
@@ -48,7 +48,7 @@ export const useExpenseOperations = (items, setItems) => {
     showUndoToast();
   };
 
-  const undoHandler = () => {
+  function undoHandler() {
     if (lastAddedItem.length === 0) return;
     
     setItems((prevItems) => 

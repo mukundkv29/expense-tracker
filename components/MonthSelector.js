@@ -3,7 +3,7 @@ import { MONTH_NAMES } from '../constants';
 import { formatCurrency } from '../utils/formatCurrency';
 import { monthSelectorStyles } from '../styles/MonthSelectorStyles';
 
-const MonthSelector = ({ selectedMonth, monthlyExpense, onMonthChange }) => {
+export default function MonthSelector({ selectedMonth, monthlyExpense, onMonthChange }) {
   return (
     <View style={monthSelectorStyles.monthlyExpenseCard}>
       <View style={monthSelectorStyles.amountSection}>
@@ -23,5 +23,3 @@ const MonthSelector = ({ selectedMonth, monthlyExpense, onMonthChange }) => {
     </View>
   );
 };
-
-export default MonthSelector;
