@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, ToastAndroid, View } from 'react-native';
 import { useState } from 'react';
 
 import { styles } from './styles/AppStyles';
@@ -9,9 +9,12 @@ import { initialItems } from './data/newData';
 
 import ItemCard from './components/ItemCard';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export default function App() {
   
   const [items, setItems] = useState(initialItems);
+  const [refreshTrigger, setRefreshTrigger] = useState(false);
   
   function handleFormInput(name, text) {
     setItems((prevItems) => 
@@ -21,23 +24,44 @@ export default function App() {
     );
   };
 
+  async function AddExpenseToAsyncStorage(key, value) {
+    try {
+      const prevValue = await AsyncStorage.getItem(String(key));
+      let total = value;
+      if(prevValue !== null) {
+        total += parseInt(prevValue);
+      }
+      console.log("Total expense of ", key, ": ", total);
+      await AsyncStorage.setItem(String(key), String(total));
+    } catch (error) {
+      console.log("Error saving expense of item ", key, "...");
+      console.log(error);
+    }
+  }
+
   function AddExpenseHandler(name) {
-    setItems((prevItems) =>
-      prevItems.map((item) => {
-        if (item.name === name) {
-          const value = parseInt(item.value, 10);
-          if(!isNaN(value)) {
-            return {
-              ...item, 
-              total: item.total+value,
-              value: "",
-              expenses: [...item.expenses, value],
-            }
-          }
-        }
-        return item;
+    const item = items.find(item => item.name === name);
+    const value = parseInt(item.value, 10);
+    if(isNaN(value) || value <=0 ) {
+      ToastAndroid.show("Please Enter a valid number", ToastAndroid.SHORT);
+      return;
+    }
+
+    console.log("Starting to save data of ", name, "...");
+    AddExpenseToAsyncStorage(name, value)
+      .then(() => {
+        console.log("Data of ", name, " added to Async-storage...");
+        setRefreshTrigger(prev => prev ? false : true);
+        setItems((prevItems) =>
+          prevItems.map((item) =>
+            item.name === name ? {...item, value: ""} : item
+          )
+        );
       })
-    );
+      .catch(error => {
+        console.log("Error saving data of ", name, " to Async-storage...");
+        console.log(error);
+      });
   };
   let MonthlyExpense = items.reduce((sum, item) => sum+item.total, 0);
   let formattedCurrency = new Intl.NumberFormat('en-IN', {
@@ -72,6 +96,7 @@ export default function App() {
               item={item}
               onAdd={AddExpenseHandler}
               onChangeText={handleFormInput}
+              refreshTrigger={refreshTrigger}
             />
           ))}
         </ScrollView>
