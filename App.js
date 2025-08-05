@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, ScrollView, Text, ToastAndroid, View } from 'react-native';
+import { Button, Text, ToastAndroid, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useEffect, useState } from 'react';
@@ -116,13 +117,14 @@ export default function App() {
           title='Clear All Expenses'
         />
         {/* List Items */}
-        <ScrollView 
-          style={{
-            width: '94%'
-          }}
+        <KeyboardAwareScrollView
+          style={{ width: '94%' }}
+          contentContainerStyle={{ paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
-          keyboardDismissMode='on-drag'
           keyboardShouldPersistTaps='handled'
+          enableOnAndroid={true}
+          extraScrollHeight={100}
+          keyboardDismissMode='on-drag'
         >
           {items.map((item) => (
             <ItemCard
@@ -133,7 +135,8 @@ export default function App() {
               refreshTrigger={refreshTrigger}
             />
           ))}
-        </ScrollView>
+        </KeyboardAwareScrollView>
+
         <StatusBar style="auto" />
       </View>
     </SafeAreaView>
