@@ -1,15 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, ScrollView, Text, ToastAndroid, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { useEffect, useState } from 'react';
 
 import { styles } from './styles/AppStyles';
-
 import { initialItems } from './data/newData';
-
 import ItemCard from './components/ItemCard';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App() {
   
@@ -123,6 +121,8 @@ export default function App() {
             width: '94%'
           }}
           showsVerticalScrollIndicator={false}
+          keyboardDismissMode='on-drag'
+          keyboardShouldPersistTaps='handled'
         >
           {items.map((item) => (
             <ItemCard
