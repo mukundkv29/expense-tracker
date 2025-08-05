@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, ScrollView, Text, ToastAndroid, View } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { styles } from './styles/AppStyles';
 
@@ -15,6 +15,7 @@ export default function App() {
   
   const [items, setItems] = useState(initialItems);
   const [refreshTrigger, setRefreshTrigger] = useState(false);
+  const [monthlyExpense, setMonthlyExpense] = useState(0);
   
   function handleFormInput(name, text) {
     setItems((prevItems) => 
@@ -74,11 +75,30 @@ export default function App() {
     }
   };
 
-  let MonthlyExpense = items.reduce((sum, item) => sum+item.total, 0);
+  async function calculateMonthlyExpense() {
+    try {
+      let total = 0;
+      for (const item of items) {
+        const storedValue = await AsyncStorage.getItem(String(item.name));
+        if (storedValue !== null) {
+          total += parseInt(storedValue, 10);
+        }
+      }
+      setMonthlyExpense(total);
+      console.log("Total monthly expense calculated: ", total);
+    } catch (error) {
+      console.log("Error calculating monthly expense: ", error);
+    }
+  }
+
+  useEffect(() => {
+    calculateMonthlyExpense();
+  }, [refreshTrigger]);
+
   let formattedCurrency = new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-  }).format(MonthlyExpense);
+  }).format(monthlyExpense);
 
   return (
     <SafeAreaView style={{flex: 1}}>
