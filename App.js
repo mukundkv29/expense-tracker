@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, Text, ToastAndroid, View } from 'react-native';
+import { Button, ScrollView, Text, ToastAndroid, View } from 'react-native';
 import { useState } from 'react';
 
 import { styles } from './styles/AppStyles';
@@ -63,6 +63,17 @@ export default function App() {
         console.log(error);
       });
   };
+  
+  async function handleClearAsyncStorage() {
+    try {
+      await AsyncStorage.clear();
+      setRefreshTrigger(prev => prev ? false : true);
+      console.log('AsyncStorage cleared successfully!!!');
+    } catch (error) {
+      console.error('Error clearing AsyncStorage...', error);
+    }
+  };
+
   let MonthlyExpense = items.reduce((sum, item) => sum+item.total, 0);
   let formattedCurrency = new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -82,7 +93,10 @@ export default function App() {
             <Text style={styles.monthText}>June 2025</Text>
           </View>
         </View>
-
+        <Button
+          onPress={handleClearAsyncStorage}
+          title='Clear All Expenses'
+        />
         {/* List Items */}
         <ScrollView 
           style={{
