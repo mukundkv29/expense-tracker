@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Text, ToastAndroid, View } from 'react-native';
+import { Button, Pressable, Text, ToastAndroid, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -9,12 +9,14 @@ import { useEffect, useState } from 'react';
 import { styles } from './styles/AppStyles';
 import { initialItems } from './data/newData';
 import ItemCard from './components/ItemCard';
+import CalendarModal from './components/CalendarModal';
 
 export default function App() {
   
   const [items, setItems] = useState(initialItems);
   const [refreshTrigger, setRefreshTrigger] = useState(false);
   const [monthlyExpense, setMonthlyExpense] = useState(0);
+  const [showCalendar, setShowCalendar] = useState(false);
   
   function handleFormInput(name, text) {
     setItems((prevItems) => 
@@ -103,13 +105,19 @@ export default function App() {
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.container}>
 
+        <CalendarModal visibility={showCalendar}/>
+
         {/* MonthlyExpense */}
         <View style={styles.monthlyExpenseCard}>
           <View style={styles.amountSection}>
             <Text style={styles.amountText}>{formattedCurrency}</Text>
           </View>
           <View style={styles.monthSection}>
-            <Text style={styles.monthText}>June 2025</Text>
+            <Pressable
+              onPress={() => setShowCalendar(true)}
+            >
+              <Text style={styles.monthText}>June 2025</Text>
+            </Pressable>
           </View>
         </View>
         <Button
