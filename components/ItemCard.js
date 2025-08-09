@@ -4,14 +4,22 @@ import { styles } from "../styles/ItemCardStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
-export default function ItemCard({item, onChangeText, onAdd, refreshTrigger}) {
+export default function ItemCard({
+  item, 
+  onChangeText, 
+  onAdd, 
+  refreshTrigger, 
+  selectedMonth, 
+  selectedYear
+}) {
 
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
     async function fetchTotal() {
       try {
-        const value = await AsyncStorage.getItem(String(item.name));
+        const storageKey = `${item.name}_${selectedMonth}_${selectedYear}`;
+        const value = await AsyncStorage.getItem(storageKey);
         setTotal(value !== null ? parseInt(value) : 0);
       } catch (error) {
         console.log("Error getting total for", item.name, error);
@@ -19,7 +27,7 @@ export default function ItemCard({item, onChangeText, onAdd, refreshTrigger}) {
       }
     };
     fetchTotal();
-  }, [item.name, refreshTrigger]);
+  }, [item.name, refreshTrigger, selectedMonth, selectedYear]);
 
   const formattedTotal = new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -30,7 +38,7 @@ export default function ItemCard({item, onChangeText, onAdd, refreshTrigger}) {
     <View key={item.name} style={styles.container}>
       <View style={styles.leftSection}>
         <Text style={styles.nameText}>{item.name}</Text>
-        <Text style={styles.amountText}>{formattedTotal!==null ? formattedTotal : 0}</Text>
+        <Text style={styles.amountText}>{formattedTotal !== null ? formattedTotal : '₹0'}</Text>
       </View>
       <TextInput
         style={styles.input}

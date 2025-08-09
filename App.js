@@ -22,7 +22,6 @@ export default function App() {
   const [refreshTrigger, setRefreshTrigger] = useState(false);
   const [monthlyExpense, setMonthlyExpense] = useState(0);
   const [showCalendar, setShowCalendar] = useState(false);
-  
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
@@ -172,6 +171,8 @@ export default function App() {
               onAdd={AddExpenseHandler}
               onChangeText={handleFormInput}
               refreshTrigger={refreshTrigger}
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
             />
           ))}
         </KeyboardAwareScrollView>
