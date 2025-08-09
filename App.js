@@ -11,6 +11,11 @@ import { initialItems } from './data/newData';
 import ItemCard from './components/ItemCard';
 import CalendarModal from './components/CalendarModal';
 
+const monthNames = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
 export default function App() {
   
   const [items, setItems] = useState(initialItems);
@@ -18,6 +23,9 @@ export default function App() {
   const [monthlyExpense, setMonthlyExpense] = useState(0);
   const [showCalendar, setShowCalendar] = useState(false);
   
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
   function handleFormInput(name, text) {
     setItems((prevItems) => 
       prevItems.map((item) => 
@@ -26,15 +34,16 @@ export default function App() {
     );
   };
 
-  async function AddExpenseToAsyncStorage(key, value) {
+  async function AddExpenseToAsyncStorage(key, value, month, year) {
     try {
-      const prevValue = await AsyncStorage.getItem(String(key));
+      const storageKey = `${key}_${month}_${year}`;
+      const prevValue = await AsyncStorage.getItem(storageKey);
       let total = value;
       if(prevValue !== null) {
         total += parseInt(prevValue);
       }
-      console.log("Total expense of ", key, ": ", total);
-      await AsyncStorage.setItem(String(key), String(total));
+      console.log("Total expense of ", storageKey, ": ", total);
+      await AsyncStorage.setItem(storageKey, String(total));
     } catch (error) {
       console.log("Error saving expense of item ", key, "...");
       console.log(error);
@@ -50,7 +59,7 @@ export default function App() {
     }
 
     console.log("Starting to save data of ", name, "...");
-    AddExpenseToAsyncStorage(name, value)
+    AddExpenseToAsyncStorage(name, value, selectedMonth, selectedYear)
       .then(() => {
         console.log("Data of ", name, " added to Async-storage...");
         setRefreshTrigger(prev => prev ? false : true);
@@ -68,9 +77,16 @@ export default function App() {
   
   async function handleClearAsyncStorage() {
     try {
-      await AsyncStorage.clear();
-      setRefreshTrigger(prev => prev ? false : true);
-      console.log('AsyncStorage cleared successfully!!!');
+      const allKeys = await AsyncStorage.getAllKeys();
+      const currentMonthKeys = allKeys.filter(key => 
+        key.endsWith(`_${selectedMonth}_${selectedYear}`)
+      );
+      
+      if (currentMonthKeys.length > 0) {
+        await AsyncStorage.multiRemove(currentMonthKeys);
+        setRefreshTrigger(prev => prev ? false : true);
+        console.log('AsyncStorage cleared for current month/year successfully!!!');
+      }
     } catch (error) {
       console.error('Error clearing AsyncStorage...', error);
     }
@@ -80,7 +96,8 @@ export default function App() {
     try {
       let total = 0;
       for (const item of items) {
-        const storedValue = await AsyncStorage.getItem(String(item.name));
+        const storageKey = `${item.name}_${selectedMonth}_${selectedYear}`;
+        const storedValue = await AsyncStorage.getItem(storageKey);
         if (storedValue !== null) {
           total += parseInt(storedValue, 10);
         }
@@ -94,7 +111,13 @@ export default function App() {
 
   useEffect(() => {
     calculateMonthlyExpense();
-  }, [refreshTrigger]);
+  }, [refreshTrigger, selectedMonth, selectedYear]);
+
+  const handleMonthYearSelect = (month, year) => {
+    setSelectedMonth(month);
+    setSelectedYear(year);
+    setShowCalendar(false);
+  };
 
   let formattedCurrency = new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -105,7 +128,13 @@ export default function App() {
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.container}>
 
-        <CalendarModal visibility={showCalendar}/>
+        <CalendarModal 
+          visibility={showCalendar}
+          month={selectedMonth}
+          year={selectedYear}
+          onMonthYearSelect={handleMonthYearSelect}
+          onClose={() => setShowCalendar(false)}
+        />
 
         {/* MonthlyExpense */}
         <View style={styles.monthlyExpenseCard}>
@@ -116,13 +145,15 @@ export default function App() {
             <Pressable
               onPress={() => setShowCalendar(true)}
             >
-              <Text style={styles.monthText}>June 2025</Text>
+              <Text style={styles.monthText}>
+                {monthNames[selectedMonth]} {selectedYear}
+              </Text>
             </Pressable>
           </View>
         </View>
         <Button
           onPress={handleClearAsyncStorage}
-          title='Clear All Expenses'
+          title={`Clear ${monthNames[selectedMonth]} ${selectedYear} Expenses`}
         />
         {/* List Items */}
         <KeyboardAwareScrollView

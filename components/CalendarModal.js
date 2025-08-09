@@ -11,15 +11,30 @@ const monthNames = [
 
 const years = Array.from({ length: 2030 - 2010 + 1 }, (_, i) => 2010 + i);
 
-export default function CalendarModal({visiblilty}) {
-  const [modalVisible, setModalVisible] = useState(visiblilty);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+export default function CalendarModal({
+  visibility, 
+  month, 
+  year, 
+  onMonthYearSelect, 
+  onClose
+}) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(month || new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(year || new Date().getFullYear());
   
   const monthScrollRef = useRef(null);
   const yearScrollRef = useRef(null);
   
   const ITEM_HEIGHT = 40;
+
+  useEffect(() => {
+    setModalVisible(visibility);
+    if (visibility) {
+      setSelectedMonth(month || new Date().getMonth());
+      setSelectedYear(year || new Date().getFullYear());
+    }
+  }, [visibility, month, year]);
+
   useEffect(() => {
     if (modalVisible) {
       setTimeout(() => {
@@ -37,7 +52,7 @@ export default function CalendarModal({visiblilty}) {
         }
       }, 100);
     }
-  }, [modalVisible]);
+  }, [modalVisible, selectedMonth, selectedYear]);
 
   const handleMonthScroll = (event) => {
     const y = event.nativeEvent.contentOffset.y;
@@ -55,25 +70,27 @@ export default function CalendarModal({visiblilty}) {
 
   const handleContinue = () => {
     console.log(`Selected: ${monthNames[selectedMonth]} ${selectedYear}`);
+    
+    if (onMonthYearSelect) {
+      onMonthYearSelect(selectedMonth, selectedYear);
+    }
+    
     setModalVisible(false);
   };
 
-  const handleOpenModal = () => {
-    const now = new Date();
-    setSelectedMonth(now.getMonth());
-    setSelectedYear(now.getFullYear());
-    setModalVisible(true);
+  const handleCancel = () => {
+    setModalVisible(false);
+    if (onClose) {
+      onClose();
+    }
   };
 
-  return(<View>
+  return (
     <Modal
       animationType="slide"
       transparent={true}
       visible={modalVisible}
-      onRequestClose={() => {
-        Alert.alert('Modal has been closed.');
-        setModalVisible(!modalVisible);
-      }}>
+      onRequestClose={handleCancel}>
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           {/* Selection indicator - Blue strip */}
@@ -161,7 +178,7 @@ export default function CalendarModal({visiblilty}) {
           <View style={styles.buttonContainer}>
             <Pressable
               style={[styles.button, styles.buttonCancel]}
-              onPress={() => setModalVisible(false)}>
+              onPress={handleCancel}>
               <Text style={styles.buttonText}>CANCEL</Text>
             </Pressable>
             <Pressable
@@ -173,12 +190,5 @@ export default function CalendarModal({visiblilty}) {
         </View>
       </View>
     </Modal>
-
-    {/* <Pressable
-      style={[styles.button, styles.buttonOpen]}
-      onPress={handleOpenModal}>
-      <Text style={styles.buttonText}>Select Month & Year</Text>
-    </Pressable> */}
-  </View>
   );
 }
