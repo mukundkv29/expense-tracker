@@ -11,10 +11,7 @@ import { initialItems } from './data/newData';
 import ItemCard from './components/ItemCard';
 import CalendarModal from './components/CalendarModal';
 
-const monthNames = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
+import { monthNames } from './utils/months';
 
 export default function App() {
   

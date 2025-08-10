@@ -1,15 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { Alert, Modal, Text, View, Pressable, ScrollView } from "react-native";
+import { Modal, Text, View, Pressable, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { styles } from "../styles/CalendarModalStyles";
-
-const monthNames = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
-
-const years = Array.from({ length: 2030 - 2010 + 1 }, (_, i) => 2010 + i);
+import { monthNames, years } from "../utils/months";
 
 export default function CalendarModal({
   visibility, 
