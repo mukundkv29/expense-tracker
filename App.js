@@ -58,7 +58,7 @@ export default function App() {
     }
 
     console.log("Starting to save data of ", name, "...");
-    AddExpenseToAsyncStorage(name, value, monthNames[date.getMonth()], date.getFullYear())
+    AddExpenseToAsyncStorage(name, value, date.getMonth(), date.getFullYear())
       .then(() => {
         console.log("Data of ", name, " added to Async-storage...");
         setRefreshTrigger(prev => prev ? false : true);
