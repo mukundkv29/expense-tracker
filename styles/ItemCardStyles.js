@@ -39,5 +39,16 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 7,
     textAlign: 'center'
-  }
+  },
+  calendarButton: {
+    marginRight: 10,
+    padding: 6,
+    borderWidth: 1,
+    borderColor: '#d29d30',
+    borderRadius: 5,
+    backgroundColor: '#fff3c4',
+  },
+  calendarText: {
+    fontSize: 20,
+  },
 });

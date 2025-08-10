@@ -49,7 +49,7 @@ export default function App() {
     }
   }
 
-  function AddExpenseHandler(name) {
+  function AddExpenseHandler(name, date) {
     const item = items.find(item => item.name === name);
     const value = parseInt(item.value, 10);
     if(isNaN(value) || value <=0 ) {
@@ -58,7 +58,7 @@ export default function App() {
     }
 
     console.log("Starting to save data of ", name, "...");
-    AddExpenseToAsyncStorage(name, value, selectedMonth, selectedYear)
+    AddExpenseToAsyncStorage(name, value, monthNames[date.getMonth()], date.getFullYear())
       .then(() => {
         console.log("Data of ", name, " added to Async-storage...");
         setRefreshTrigger(prev => prev ? false : true);

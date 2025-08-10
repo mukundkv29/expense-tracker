@@ -1,8 +1,10 @@
-import { View, Text, TextInput, Button  } from "react-native";
+import { View, Text, TextInput, Button, Pressable } from "react-native";
+import { useEffect, useState } from "react";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 import { styles } from "../styles/ItemCardStyles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
 
 export default function ItemCard({
   item, 
@@ -14,6 +16,8 @@ export default function ItemCard({
 }) {
 
   const [total, setTotal] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
     async function fetchTotal() {
@@ -28,6 +32,13 @@ export default function ItemCard({
     };
     fetchTotal();
   }, [item.name, refreshTrigger, selectedMonth, selectedYear]);
+
+  function onDateChange(event, date) {
+    setShowDatePicker(false);
+    if(date) {
+      setSelectedDate(date);
+    }
+  }
 
   const formattedTotal = new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -48,12 +59,25 @@ export default function ItemCard({
         placeholder="Add"
         placeholderTextColor='#888'
         onChangeText={(text) => onChangeText(item.name, text)}
-        onSubmitEditing={() => onAdd(item.name)}
+        onSubmitEditing={() => onAdd(item.name, selectedDate)}
       />
+      <Pressable
+        onPress={() => setShowDatePicker(true)}
+        style={styles.calendarButton}
+      >
+        <Text style={styles.calendarText}>📅</Text>
+      </Pressable>
       <Button
-        onPress={() => onAdd(item.name)}
+        onPress={() => onAdd(item.name, selectedDate)}
         title="Add"
       />
+      {showDatePicker && (
+        <DateTimePicker
+          value={selectedDate}
+          mode='date'
+          onChange={onDateChange}
+        />
+      )}
     </View>
   );
 }
