@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Pressable, Text, ToastAndroid, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
 import { useEffect, useState } from 'react';
 
@@ -12,6 +13,47 @@ import ItemCard from './components/ItemCard';
 import CalendarModal from './components/CalendarModal';
 
 import { monthNames } from './utils/months';
+const toastConfig = {
+  undoToast: ({ text1, props }) => (
+    <View style={{
+      height: 60,
+      width: '90%',
+      backgroundColor: '#333',
+      paddingHorizontal: 15,
+      paddingVertical: 10,
+      borderRadius: 8,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: 20,
+    }}>
+      <Text style={{
+        color: 'white',
+        fontSize: 14,
+        flex: 1,
+      }}>
+        {text1}
+      </Text>
+      <Pressable
+        style={{
+          backgroundColor: '#4CAF50',
+          paddingHorizontal: 12,
+          paddingVertical: 6,
+          borderRadius: 4,
+        }}
+        onPress={props.onUndo}
+      >
+        <Text style={{
+          color: 'white',
+          fontSize: 12,
+          fontWeight: 'bold',
+        }}>
+          UNDO
+        </Text>
+      </Pressable>
+    </View>
+  ),
+};
 
 export default function App() {
   
@@ -52,12 +94,70 @@ export default function App() {
     }
   }
 
+  async function handleUndoFromToast() {
+    Toast.hide();
+    
+    if(!lastAddedExpense) {
+      Toast.show({
+        type: 'error',
+        text1: 'Nothing to undo',
+        position: 'bottom',
+      });
+      return;
+    }
+    
+    try {
+      const { storageKey, expenseAmount, previousTotal } = lastAddedExpense;
+      const currentValue = await AsyncStorage.getItem(storageKey);
+      
+      if(currentValue === null) {
+        Toast.show({
+          type: 'error',
+          text1: 'No data found to undo',
+          position: 'bottom',
+        });
+        return;
+      }
+      
+      const newTotal = parseInt(currentValue) - expenseAmount;
+      console.log("Undoing expense. Previous total:", currentValue, "New total:", newTotal);
+      
+      if(newTotal <= 0) {
+        await AsyncStorage.removeItem(storageKey);
+        console.log("Removed item from storage as total became 0 or negative");
+      } else {
+        await AsyncStorage.setItem(storageKey, String(newTotal));
+      }
+      
+      setLastAddedExpense(null);
+      setRefreshTrigger(prev => !prev);
+      
+      // Show success toast
+      Toast.show({
+        type: 'success',
+        text1: 'Expense undone successfully',
+        position: 'bottom',
+      });
+    } catch (error) {
+      console.log("Error while doing undo...");
+      console.log(error);
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to undo expense',
+        position: 'bottom',
+      });
+    }
+  }
+
   function AddExpenseHandler(name, date) {
     const item = items.find(item => item.name === name);
     const value = parseInt(item.value, 10);
     if(isNaN(value) || value <=0 ) {
-      ToastAndroid.show("Please Enter a valid number", ToastAndroid.SHORT);
-      return;
+      Toast.show({
+        type: 'error',
+        text1: 'Please enter a valid number',
+        position: 'bottom',
+      });
     }
 
     console.log("Starting to save data of ", name, "...");
@@ -70,10 +170,24 @@ export default function App() {
             item.name === name ? {...item, value: ""} : item
           )
         );
+        Toast.show({
+          type: 'undoToast',
+          text1: `₹${value} added to ${name}`,
+          position: 'bottom',
+          visibilityTime: 5000,
+          props: {
+            onUndo: handleUndoFromToast,
+          }
+        });
       })
       .catch(error => {
         console.log("Error saving data of ", name, " to Async-storage...");
         console.log(error);
+        Toast.show({
+          type: 'error',
+          text1: 'Failed to save the expense',
+          position: 'bottom'
+        });
       });
   };
   
@@ -93,43 +207,6 @@ export default function App() {
       console.error('Error clearing AsyncStorage...', error);
     }
   };
-
-  async function undoExpenseHandler() {
-    if(!lastAddedExpense) {
-      ToastAndroid.show("Nothing in Cache", ToastAndroid.SHORT);
-      return;
-    }
-    
-    try {
-      const { storageKey, expenseAmount, previousTotal } = lastAddedExpense;
-      const currentValue = await AsyncStorage.getItem(storageKey);
-      
-      if(currentValue === null) {
-        ToastAndroid.show("No data found to undo", ToastAndroid.SHORT);
-        return;
-      }
-      
-      const newTotal = parseInt(currentValue) - expenseAmount;
-      console.log("Undoing expense. Previous total:", currentValue, "New total:", newTotal);
-      
-      if(newTotal <= 0) {
-        await AsyncStorage.removeItem(storageKey);
-        console.log("Removed item from storage as total became 0 or negative");
-      } else {
-        await AsyncStorage.setItem(storageKey, String(newTotal));
-      }
-      
-      setLastAddedExpense(null);
-      setRefreshTrigger(prev => !prev);
-      
-      ToastAndroid.show("Expense undone successfully", ToastAndroid.SHORT);
-    } catch (error) {
-      console.log("Error while doing undo...");
-      console.log(error);
-      ToastAndroid.show("Error", ToastAndroid.SHORT);
-      ToastAndroid.show("Failed to undo expense", ToastAndroid.SHORT);
-    }
-  }
 
   async function calculateMonthlyExpense() {
     try {
@@ -190,15 +267,7 @@ export default function App() {
             </Pressable>
           </View>
         </View>
-        <Button
-          title='Undo'
-          onPress={undoExpenseHandler}
-        />
-        {/* <Button
-          onPress={handleClearAsyncStorage}
-          title={`Clear ${monthNames[selectedMonth]} ${selectedYear} Expenses`}
-        /> */}
-        {/* List Items */}
+
         <KeyboardAwareScrollView
           style={{ width: '94%' }}
           contentContainerStyle={{ paddingBottom: 20 }}
@@ -223,6 +292,7 @@ export default function App() {
 
         <StatusBar style="auto" />
       </View>
+      <Toast config={toastConfig} />
     </SafeAreaView>
   );
 }
