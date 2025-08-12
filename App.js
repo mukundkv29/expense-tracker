@@ -21,6 +21,7 @@ export default function App() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [lastAddedExpense, setLastAddedExpense] = useState(null);
 
   function handleFormInput(name, text) {
     setItems((prevItems) => 
@@ -40,6 +41,11 @@ export default function App() {
       }
       console.log("Total expense of ", storageKey, ": ", total);
       await AsyncStorage.setItem(storageKey, String(total));
+      setLastAddedExpense({
+        storageKey: storageKey,
+        expenseAmount: value,
+        previousTotal: prevValue ? parseInt(prevValue) : 0
+      });
     } catch (error) {
       console.log("Error saving expense of item ", key, "...");
       console.log(error);
@@ -87,6 +93,43 @@ export default function App() {
       console.error('Error clearing AsyncStorage...', error);
     }
   };
+
+  async function undoExpenseHandler() {
+    if(!lastAddedExpense) {
+      ToastAndroid.show("Nothing in Cache", ToastAndroid.SHORT);
+      return;
+    }
+    
+    try {
+      const { storageKey, expenseAmount, previousTotal } = lastAddedExpense;
+      const currentValue = await AsyncStorage.getItem(storageKey);
+      
+      if(currentValue === null) {
+        ToastAndroid.show("No data found to undo", ToastAndroid.SHORT);
+        return;
+      }
+      
+      const newTotal = parseInt(currentValue) - expenseAmount;
+      console.log("Undoing expense. Previous total:", currentValue, "New total:", newTotal);
+      
+      if(newTotal <= 0) {
+        await AsyncStorage.removeItem(storageKey);
+        console.log("Removed item from storage as total became 0 or negative");
+      } else {
+        await AsyncStorage.setItem(storageKey, String(newTotal));
+      }
+      
+      setLastAddedExpense(null);
+      setRefreshTrigger(prev => !prev);
+      
+      ToastAndroid.show("Expense undone successfully", ToastAndroid.SHORT);
+    } catch (error) {
+      console.log("Error while doing undo...");
+      console.log(error);
+      ToastAndroid.show("Error", ToastAndroid.SHORT);
+      ToastAndroid.show("Failed to undo expense", ToastAndroid.SHORT);
+    }
+  }
 
   async function calculateMonthlyExpense() {
     try {
@@ -148,9 +191,13 @@ export default function App() {
           </View>
         </View>
         <Button
+          title='Undo'
+          onPress={undoExpenseHandler}
+        />
+        {/* <Button
           onPress={handleClearAsyncStorage}
           title={`Clear ${monthNames[selectedMonth]} ${selectedYear} Expenses`}
-        />
+        /> */}
         {/* List Items */}
         <KeyboardAwareScrollView
           style={{ width: '94%' }}
