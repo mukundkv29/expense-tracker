@@ -83,21 +83,27 @@ export default function App() {
       }
       console.log("Total expense of ", storageKey, ": ", total);
       await AsyncStorage.setItem(storageKey, String(total));
-      setLastAddedExpense({
-        storageKey: storageKey,
-        expenseAmount: value,
-        previousTotal: prevValue ? parseInt(prevValue) : 0
-      });
+      const expenseData = {
+      storageKey: storageKey,
+      expenseAmount: value,
+      previousTotal: prevValue ? parseInt(prevValue) : 0
+    };
+    setLastAddedExpense(expenseData);
+
+    return expenseData;
     } catch (error) {
       console.log("Error saving expense of item ", key, "...");
       console.log(error);
+      throw error;
     }
   }
 
-  async function handleUndoFromToast() {
+  async function handleUndoFromToast(expenseDataFromToast) {
     Toast.hide();
+
+    const expenseData = expenseDataFromToast || lastAddedExpense;
     
-    if(!lastAddedExpense) {
+    if(!expenseData) {
       Toast.show({
         type: 'error',
         text1: 'Nothing to undo',
@@ -107,7 +113,7 @@ export default function App() {
     }
     
     try {
-      const { storageKey, expenseAmount, previousTotal } = lastAddedExpense;
+      const { storageKey, expenseAmount, previousTotal } = expenseData;
       const currentValue = await AsyncStorage.getItem(storageKey);
       
       if(currentValue === null) {
@@ -132,7 +138,6 @@ export default function App() {
       setLastAddedExpense(null);
       setRefreshTrigger(prev => !prev);
       
-      // Show success toast
       Toast.show({
         type: 'success',
         text1: 'Expense undone successfully',
@@ -158,11 +163,12 @@ export default function App() {
         text1: 'Please enter a valid number',
         position: 'bottom',
       });
+      return;
     }
 
     console.log("Starting to save data of ", name, "...");
     AddExpenseToAsyncStorage(name, value, date.getMonth(), date.getFullYear())
-      .then(() => {
+      .then((expenseData) => {
         console.log("Data of ", name, " added to Async-storage...");
         setRefreshTrigger(prev => prev ? false : true);
         setItems((prevItems) =>
@@ -176,7 +182,7 @@ export default function App() {
           position: 'bottom',
           visibilityTime: 5000,
           props: {
-            onUndo: handleUndoFromToast,
+            onUndo: () => handleUndoFromToast(expenseData),
           }
         });
       })
@@ -291,8 +297,8 @@ export default function App() {
         </KeyboardAwareScrollView>
 
         <StatusBar style="auto" />
+        <Toast config={toastConfig} />
       </View>
-      <Toast config={toastConfig} />
     </SafeAreaView>
   );
 }
