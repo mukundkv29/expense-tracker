@@ -5,12 +5,16 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    padding: 20,
+    padding: 2,
+    paddingTop: 20,
   },
   monthlyExpenseCard: {
     backgroundColor: '#f8f7de',
     borderRadius: 15,
-    padding: 16,
+    // padding: 10,
+    margin: 10,
+    paddingRight: 2,
+    paddingLeft: 7,
     shadowColor: 'black',
     shadowOffset: {
       width: 0,
@@ -27,7 +31,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center'
   },
   amountSection: {
-    flex: 4,
+    flex: 7,
     borderColor: '#d29d30',
     borderRightWidth: 2,
     width: '70%',
@@ -35,20 +39,20 @@ export const styles = StyleSheet.create({
   },
   amountText: {
     fontWeight: 'bold',
-    fontSize: 40,
+    fontSize: 35,
     width: '100%',
     paddingLeft: 5,
     color: '#3a200c',
   },
   monthSection: {
-    flex: 1,
-    paddingLeft: 10,
+    flex: 3,
+    paddingLeft: 7,
     justifyContent: 'center',
     alignItems: 'center',
   },
   monthText: {
-    fontSize: 16,
-    padding: 10,
+    fontSize: 14,
+    padding: 5,
     color: '#854d0d'
   },
 });

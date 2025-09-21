@@ -5,13 +5,13 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f7ea87',
-    marginTop: 40,
+    marginTop: 18,
     borderWidth: 3,
     borderColor: '#854d0d',
     borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 5,
+    borderRadius: 7,
+    padding: 6,
+    marginHorizontal: 10,
     justifyContent: 'space-between',
   },
   leftSection: {
@@ -20,12 +20,12 @@ export const styles = StyleSheet.create({
     marginRight: 10,
   },
   nameText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#3a200c',
     marginBottom: 4,
   },
   amountText: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#3a200c',
   },
@@ -38,7 +38,9 @@ export const styles = StyleSheet.create({
     borderColor: '#d29d30',
     borderWidth: 1,
     borderRadius: 7,
-    textAlign: 'center'
+    textAlign: 'center',
+    height: 40,
+    fontSize: 14,
   },
   calendarButton: {
     marginRight: 10,
@@ -49,6 +51,6 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fff3c4',
   },
   calendarText: {
-    fontSize: 20,
+    fontSize: 18,
   },
 });
