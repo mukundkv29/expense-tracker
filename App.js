@@ -1,7 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Pressable, Text, View } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Pressable, Text, View, Platform, KeyboardAvoidingView, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 
@@ -13,6 +12,7 @@ import ItemCard from './components/ItemCard';
 import CalendarModal from './components/CalendarModal';
 
 import { monthNames } from './utils/months';
+
 const toastConfig = {
   undoToast: ({ text1, props }) => (
     <View style={{
@@ -247,9 +247,8 @@ export default function App() {
   }).format(monthlyExpense);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1}} edges={['top']}>
       <View style={styles.container}>
-
         <CalendarModal 
           visibility={showCalendar}
           month={selectedMonth}
@@ -274,27 +273,31 @@ export default function App() {
           </View>
         </View>
 
-        <KeyboardAwareScrollView
-          style={{ width: '94%' }}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps='handled'
-          enableOnAndroid={true}
-          extraScrollHeight={100}
-          keyboardDismissMode='on-drag'
+        <KeyboardAvoidingView 
+          style={{flex: 1, width: '94%'}} 
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
         >
-          {items.map((item) => (
-            <ItemCard
-              key={item.name}
-              item={item}
-              onAdd={AddExpenseHandler}
-              onChangeText={handleFormInput}
-              refreshTrigger={refreshTrigger}
-              selectedMonth={selectedMonth}
-              selectedYear={selectedYear}
-            />
-          ))}
-        </KeyboardAwareScrollView>
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingBottom: 50 }}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps='handled'
+            keyboardDismissMode='on-drag'
+          >
+            {items.map((item) => (
+              <ItemCard
+                key={item.name}
+                item={item}
+                onAdd={AddExpenseHandler}
+                onChangeText={handleFormInput}
+                refreshTrigger={refreshTrigger}
+                selectedMonth={selectedMonth}
+                selectedYear={selectedYear}
+              />
+            ))}
+          </ScrollView>
+        </KeyboardAvoidingView>
 
         <StatusBar style="auto" />
         <Toast config={toastConfig} />
