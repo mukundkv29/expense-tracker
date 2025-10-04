@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Pressable, Text, View, Platform, KeyboardAvoidingView, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
-
+import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 
 import { styles } from '../styles/AppStyles';
@@ -64,6 +64,7 @@ export default function HomeScreen() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [lastAddedExpense, setLastAddedExpense] = useState(null);
+  const navigation = useNavigation();
 
   function handleFormInput(name, text) {
     setItems((prevItems) => 
@@ -246,6 +247,10 @@ export default function HomeScreen() {
     currency: 'INR',
   }).format(monthlyExpense);
 
+  function handleCategoryPress(categoryName) {
+    navigation.navigate('CategoryHistory', {category: categoryName});
+  }
+
   return (
     <SafeAreaView style={{flex: 1}} edges={['top']}>
       <View style={styles.container}>
@@ -286,15 +291,21 @@ export default function HomeScreen() {
             keyboardDismissMode='on-drag'
           >
             {items.map((item) => (
-              <ItemCard
+              <Pressable
                 key={item.name}
-                item={item}
-                onAdd={AddExpenseHandler}
-                onChangeText={handleFormInput}
-                refreshTrigger={refreshTrigger}
-                selectedMonth={selectedMonth}
-                selectedYear={selectedYear}
-              />
+                onPress={() => handleCategoryPress(item.name)}
+                style={{marginBottom: 8}}
+              >
+                <ItemCard
+                  key={item.name}
+                  item={item}
+                  onAdd={AddExpenseHandler}
+                  onChangeText={handleFormInput}
+                  refreshTrigger={refreshTrigger}
+                  selectedMonth={selectedMonth}
+                  selectedYear={selectedYear}
+                />
+              </Pressable>
             ))}
           </ScrollView>
         </KeyboardAvoidingView>
