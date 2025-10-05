@@ -85,17 +85,29 @@ export default function HomeScreen() {
       console.log("Total expense of ", storageKey, ": ", total);
       await AsyncStorage.setItem(storageKey, String(total));
       const expenseData = {
-      storageKey: storageKey,
-      expenseAmount: value,
-      previousTotal: prevValue ? parseInt(prevValue) : 0
-    };
-    setLastAddedExpense(expenseData);
-
-    return expenseData;
+        storageKey: storageKey,
+        expenseAmount: value,
+        previousTotal: prevValue ? parseInt(prevValue) : 0
+      };
+      
+      setLastAddedExpense(expenseData);
+      return expenseData;
     } catch (error) {
       console.log("Error saving expense of item ", key, "...");
       console.log(error);
       throw error;
+    }
+  }
+
+  async function AddCategoryLog(category, logEntry) {
+    const key = `log_${category}`;
+    try {
+      const existing = await AsyncStorage.getItem(key);
+      const logs = existing ? JSON.parse(existing) : [];
+      logs.push(logEntry); // logEntry: { amount, date, ... }
+      await AsyncStorage.setItem(key, JSON.stringify(logs));
+    } catch (e) {
+      // handle error
     }
   }
 
@@ -167,6 +179,9 @@ export default function HomeScreen() {
       return;
     }
 
+    const logEntry = { amount: value, date: date.toISOString() };
+    AddCategoryLog(name, logEntry);
+
     console.log("Starting to save data of ", name, "...");
     AddExpenseToAsyncStorage(name, value, date.getMonth(), date.getFullYear())
       .then((expenseData) => {
@@ -196,7 +211,7 @@ export default function HomeScreen() {
           position: 'bottom'
         });
       });
-  };
+  }
   
   async function handleClearAsyncStorage() {
     try {
