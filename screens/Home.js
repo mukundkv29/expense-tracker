@@ -74,9 +74,9 @@ export default function HomeScreen() {
     );
   };
 
-  async function AddExpenseToAsyncStorage(key, value, month, year) {
+  async function AddExpenseToAsyncStorage(name, value, month, year) {
     try {
-      const storageKey = `${key}_${month}_${year}`;
+      const storageKey = `${name}_${year}_${month}`;
       const prevValue = await AsyncStorage.getItem(storageKey);
       let total = value;
       if(prevValue !== null) {
@@ -99,12 +99,13 @@ export default function HomeScreen() {
     }
   }
 
-  async function AddCategoryLog(category, logEntry) {
+  async function AddCategoryLog(category, month, year) {
     const key = `log_${category}`;
     try {
       const existing = await AsyncStorage.getItem(key);
       const logs = existing ? JSON.parse(existing) : [];
-      logs.push(logEntry); // logEntry: { amount, date, ... }
+      // logs.push(logEntry); // logEntry: { amount, date, ... }
+      logs.push(year.toString() + "_" + month.toString());
       await AsyncStorage.setItem(key, JSON.stringify(logs));
     } catch (e) {
       // handle error
@@ -179,8 +180,8 @@ export default function HomeScreen() {
       return;
     }
 
-    const logEntry = { amount: value, date: date.toISOString() };
-    AddCategoryLog(name, logEntry);
+    // const logEntry = { amount: value, date: date.toISOString() };
+    // AddCategoryLog(name, logEntry);
 
     console.log("Starting to save data of ", name, "...");
     AddExpenseToAsyncStorage(name, value, date.getMonth(), date.getFullYear())
@@ -192,6 +193,7 @@ export default function HomeScreen() {
             item.name === name ? {...item, value: ""} : item
           )
         );
+        AddCategoryLog(name, date.getMonth(), date.getFullYear());
         Toast.show({
           type: 'undoToast',
           text1: `₹${value} added to ${name}`,
@@ -217,7 +219,7 @@ export default function HomeScreen() {
     try {
       const allKeys = await AsyncStorage.getAllKeys();
       const currentMonthKeys = allKeys.filter(key => 
-        key.endsWith(`_${selectedMonth}_${selectedYear}`)
+        key.endsWith(`_${selectedYear}_${selectedMonth}`)
       );
       
       if (currentMonthKeys.length > 0) {
@@ -234,7 +236,7 @@ export default function HomeScreen() {
     try {
       let total = 0;
       for (const item of items) {
-        const storageKey = `${item.name}_${selectedMonth}_${selectedYear}`;
+        const storageKey = `${item.name}_${selectedYear}_${selectedMonth}`;
         const storedValue = await AsyncStorage.getItem(storageKey);
         if (storedValue !== null) {
           total += parseInt(storedValue, 10);
@@ -292,6 +294,24 @@ export default function HomeScreen() {
             </Pressable>
           </View>
         </View>
+
+        {/* Clear All Expenses Button */}
+        <Pressable
+          style={{
+            backgroundColor: '#e53935',
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginVertical: 10,
+            width: '94%',
+            alignSelf: 'center'
+          }}
+          onPress={handleClearAsyncStorage}
+        >
+          <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>
+            Clear All Expenses
+          </Text>
+        </Pressable>
 
         <KeyboardAvoidingView 
           style={{flex: 1, width: '94%'}} 

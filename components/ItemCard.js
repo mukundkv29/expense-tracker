@@ -22,7 +22,7 @@ export default function ItemCard({
   useEffect(() => {
     async function fetchTotal() {
       try {
-        const storageKey = `${item.name}_${selectedMonth}_${selectedYear}`;
+        const storageKey = `${item.name}_${selectedYear}_${selectedMonth}`;
         const value = await AsyncStorage.getItem(storageKey);
         setTotal(value !== null ? parseInt(value) : 0);
       } catch (error) {
