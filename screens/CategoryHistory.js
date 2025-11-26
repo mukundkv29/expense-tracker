@@ -14,7 +14,25 @@ export default function CategoryHistoryScreen({ route }) {
         const logKey = `log_${categoryName}`;
         const existingLog = await AsyncStorage.getItem(logKey);
         const log = existingLog ? JSON.parse(existingLog) : [];
-        setLogs(log);
+        const uniqueMonths = new Set(log);
+        for(const month of uniqueMonths) {
+          if(typeof(month) !== 'string') {
+            continue;
+          }
+          const storageKey = `${categoryName}_`+month;
+          try {
+            const prevValue = await AsyncStorage.getItem(storageKey);
+            if(prevValue !== null) {
+              setLogs(prevLogs => [...prevLogs, {
+                month: month,
+                totalExpense: prevValue
+              }]);
+            }
+          } catch (error) {
+            console.log(`Error in fetching prev month logs: `, error);
+          }
+        }
+        // setLogs([...uniqueSet]);
       } catch (error) {
         console.log(`Error in retrieving ${categoryName} logs: `, error);
       }
@@ -30,7 +48,10 @@ export default function CategoryHistoryScreen({ route }) {
       {
         logs.map((log, idx) => {
           console.log(log, typeof(log))
-          return typeof(log) === "string" ? <Text key={idx}>{String(log)}</Text> : ''
+          return typeof(log) === "string" ? <>
+            <Text key={idx}>{String(log.month)}</Text>
+            <Text key={idx}>{String(log.totalExpense)}</Text>
+          </> : ''
         })
       }
     </View>
