@@ -1,44 +1,38 @@
 import { View, Text } from 'react-native';
-import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
-import HistoryCard from '../components/HistoryCard';
 
-export default function CategoryHistoryScreen() {
-  const route = useRoute();
-  const { category } = route.params;
+export default function CategoryHistoryScreen({ route }) {
 
-  const [histories, setHistories] = useState([]);
-
-  async function getCategoryLogs(category) {
-    const key = `log_${category}`;
-    try {
-      const existing = await AsyncStorage.getItem(key);
-      return existing ? JSON.parse(existing) : [];
-    } catch (e) {
-      console.error(`Error in fetching ${category} Logs`, e);
-      return [];
-    }
-  }
-
+  const category = route?.params?.category ?? '';
+  const categoryName = typeof category === 'string' ? category : JSON.stringify(category);
+  const [logs, setLogs] = useState([]);
+  
   useEffect(() => {
-    getCategoryLogs(category).then(logs => {
-      // logs.sort()
-      setHistories(logs);
-    })
-  }, [category, histories]);
+    async function fetchLogs() {
+      try {
+        const logKey = `log_${categoryName}`;
+        const existingLog = await AsyncStorage.getItem(logKey);
+        const log = existingLog ? JSON.parse(existingLog) : [];
+        setLogs(log);
+      } catch (error) {
+        console.log(`Error in retrieving ${categoryName} logs: `, error);
+      }
+    }
+
+    fetchLogs();
+  }, [categoryName]);
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text style={{ fontSize: 22, fontWeight: 'bold' }}>Category Histories</Text>
-      <Text style={{ fontSize: 18, marginTop: 16 }}>Category: {category}</Text>
-      {histories.map(((history, index) =>
-        <HistoryCard
-          amount={history.amount}
-        />
-      ))}
-      {/* {histories.map(((history, index) =>
-      <Text key={index}>{history.amount}</Text>))} */}
+      <Text style={{ fontSize: 18, marginTop: 16 }}>Category: {categoryName}</Text>
+      {
+        logs.map((log, idx) => {
+          console.log(log, typeof(log))
+          return typeof(log) === "string" ? <Text key={idx}>{String(log)}</Text> : ''
+        })
+      }
     </View>
   );
 }
