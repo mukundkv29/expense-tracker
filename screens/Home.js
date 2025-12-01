@@ -185,7 +185,7 @@ export default function HomeScreen() {
       });
       return;
     }
-    
+
     console.log("Starting to save data of ", name, "...");
     AddExpenseToAsyncStorage(name, value, date.getMonth(), date.getFullYear())
       .then((expenseData) => {
@@ -218,22 +218,22 @@ export default function HomeScreen() {
       });
   }
   
-  async function handleClearAsyncStorage() {
-    try {
-      const allKeys = await AsyncStorage.getAllKeys();
-      const currentMonthKeys = allKeys.filter(key => 
-        key.endsWith(`_${selectedYear}_${selectedMonth}`)
-      );
+  // async function handleClearAsyncStorage() {
+  //   try {
+  //     const allKeys = await AsyncStorage.getAllKeys();
+  //     const currentMonthKeys = allKeys.filter(key => 
+  //       key.endsWith(`_${selectedYear}_${selectedMonth}`)
+  //     );
       
-      if (currentMonthKeys.length > 0) {
-        await AsyncStorage.multiRemove(currentMonthKeys);
-        setRefreshTrigger(prev => prev ? false : true);
-        console.log('AsyncStorage cleared for current month/year successfully!!!');
-      }
-    } catch (error) {
-      console.error('Error clearing AsyncStorage...', error);
-    }
-  };
+  //     if (currentMonthKeys.length > 0) {
+  //       await AsyncStorage.multiRemove(currentMonthKeys);
+  //       setRefreshTrigger(prev => prev ? false : true);
+  //       console.log('AsyncStorage cleared for current month/year successfully!!!');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error clearing AsyncStorage...', error);
+  //   }
+  // };
 
   async function calculateMonthlyExpense() {
     try {
@@ -305,7 +305,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Clear All Expenses Button */}
+        {/* Clear All Expenses Button
         <Pressable
           style={{
             backgroundColor: '#e53935',
@@ -321,7 +321,7 @@ export default function HomeScreen() {
           <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>
             Clear All Expenses
           </Text>
-        </Pressable>
+        </Pressable> */}
 
         <KeyboardAvoidingView 
           style={{flex: 1, width: '94%'}} 

@@ -1,14 +1,30 @@
 export const initialItems = [
   {
-    name: "Shopping",
-    value: "",
-  },
-  {
-    name: "Trips",
-    value: "",
-  },
-  {
     name: "Groceries",
+    value: "",
+  },
+  {
+    name: "Utilities",
+    value: "",
+  },
+  {
+    name: "Dining Out",
+    value: "",
+  },
+  {
+    name: "Food Delivery",
+    value: "",
+  },
+  {
+    name: "Transport",
+    value: "",
+  },
+  {
+    name: "Sports/Fitness",
+    value: "",
+  },
+  {
+    name: "Clothing",
     value: "",
   },
   {
@@ -16,19 +32,23 @@ export const initialItems = [
     value: "",
   },
   {
-    name: "Sports",
+    name: "Trip",
     value: "",
   },
   {
-    name: "Entertainment",
+    name: "Gifts",
     value: "",
   },
   {
-    name: "Rent",
+    name: "Home Supplies",
     value: "",
   },
   {
-    name: "Transport",
+    name: "Rent/Housing",
+    value: "",
+  },
+  {
+    name: "Miscellaneous",
     value: "",
   }
 ];
