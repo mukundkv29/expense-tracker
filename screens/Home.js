@@ -89,7 +89,15 @@ export default function HomeScreen() {
         expenseAmount: value,
         previousTotal: prevValue ? parseInt(prevValue) : 0
       };
-      
+      try {
+        const storageArrKey = `array_${name}_${year}_${month}`;
+        const prevArray = await AsyncStorage.getItem(storageArrKey);
+        const arr = prevArray ? JSON.parse(prevArray) : [];
+        arr.push(parseInt(value));
+        await AsyncStorage.setItem(storageArrKey, JSON.stringify(arr));
+      } catch (error) {
+        console.log(`Error in fetching the array of ${name}: `, error);
+      }
       setLastAddedExpense(expenseData);
       return expenseData;
     } catch (error) {
@@ -107,16 +115,14 @@ export default function HomeScreen() {
       // logs.push(logEntry); // logEntry: { amount, date, ... }
       logs.push(year.toString() + "_" + month.toString());
       await AsyncStorage.setItem(key, JSON.stringify(logs));
-    } catch (e) {
-      // handle error
+    } catch (error) {
+      console.log(`Error in fetching ${category} logs: `, error);
     }
   }
 
   async function handleUndoFromToast(expenseDataFromToast) {
     Toast.hide();
-
     const expenseData = expenseDataFromToast || lastAddedExpense;
-    
     if(!expenseData) {
       Toast.show({
         type: 'error',
@@ -179,10 +185,7 @@ export default function HomeScreen() {
       });
       return;
     }
-
-    // const logEntry = { amount: value, date: date.toISOString() };
-    // AddCategoryLog(name, logEntry);
-
+    
     console.log("Starting to save data of ", name, "...");
     AddExpenseToAsyncStorage(name, value, date.getMonth(), date.getFullYear())
       .then((expenseData) => {
@@ -252,6 +255,13 @@ export default function HomeScreen() {
   useEffect(() => {
     calculateMonthlyExpense();
   }, [refreshTrigger, selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setRefreshTrigger(prev => !prev);
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const handleMonthYearSelect = (month, year) => {
     setSelectedMonth(month);
